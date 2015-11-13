@@ -106,6 +106,7 @@ public class SrvUnicastHostsProvider extends AbstractComponent implements Unicas
             }
 
             try {
+                logger.info("Trying to resolve '{}'", host);
                 Resolver resolver = new SimpleResolver(host);
                 if (port > 0) {
                     resolver.setPort(port);
@@ -126,7 +127,10 @@ public class SrvUnicastHostsProvider extends AbstractComponent implements Unicas
             } catch (UnknownHostException e) {
                 logger.info("Could not create resolver. Using default resolver.", e);
             }
+        } else {
+            throw new RuntimeException("Unable to find resolvers");
         }
+        logger.info("Trying to discover hosts with a list of {} resolvers", resolvers.size());
         return parent_resolver;
     }
 
@@ -135,6 +139,7 @@ public class SrvUnicastHostsProvider extends AbstractComponent implements Unicas
     }
 
     public List<DiscoveryNode> buildDynamicNodes() {
+        logger.info("Entering buildDynamicNodes");
         List<DiscoveryNode> discoNodes = Lists.newArrayList();
         if (query == null) {
             logger.error("DNS query must not be null. Please set '{}'", DISCOVERY_SRV_QUERY);
@@ -205,12 +210,18 @@ public class SrvUnicastHostsProvider extends AbstractComponent implements Unicas
         return discoNodes;
     }
 
-    protected Record[] lookupRecords() throws TextParseException {
+    private Record[] lookupRecords() throws TextParseException {
+        logger.info("lookupRecords: trying to find {}", query);
         Lookup lookup = new Lookup(query, Type.SRV);
         if (this.resolver != null) {
             lookup.setResolver(this.resolver);
         }
-        return lookup.run();
+        Record[] records = lookup.run();
+        if(records == null) {
+            records = new Record[]{};
+        }
+        logger.info("lookupRecords found: {}", records);
+        return records;
     }
 
     protected List<DiscoveryNode> parseRecords(List<Record> records) {
