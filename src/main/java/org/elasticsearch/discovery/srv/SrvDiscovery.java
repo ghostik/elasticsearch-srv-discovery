@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Grant Rodgers
+ * Copyright (c) 2015 GitHub
  *
  *     Permission is hereby granted, free of charge, to any person obtaining
  *     a copy of this software and associated documentation files (the "Software"),
@@ -22,25 +22,31 @@
 
 package org.elasticsearch.discovery.srv;
 
-import org.elasticsearch.Version;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.cluster.ClusterService;
 import org.elasticsearch.cluster.node.DiscoveryNodeService;
+import org.elasticsearch.cluster.settings.DynamicSettings;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.discovery.DiscoverySettings;
 import org.elasticsearch.discovery.zen.ZenDiscovery;
+import org.elasticsearch.discovery.zen.elect.ElectMasterService;
 import org.elasticsearch.discovery.zen.ping.ZenPingService;
 import org.elasticsearch.node.settings.NodeSettingsService;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.transport.TransportService;
 
+/**
+ *
+ */
 public class SrvDiscovery extends ZenDiscovery {
 
     @Inject
     public SrvDiscovery(Settings settings, ClusterName clusterName, ThreadPool threadPool, TransportService transportService,
                         ClusterService clusterService, NodeSettingsService nodeSettingsService, ZenPingService pingService,
-                        DiscoveryNodeService discoveryNodeService, Version version) {
+                        DiscoveryNodeService discoveryNodeService,DiscoverySettings discoverySettings,
+                        ElectMasterService electMasterService, DynamicSettings dynamicSettings) {
         super(settings, clusterName, threadPool, transportService, clusterService, nodeSettingsService,
-                discoveryNodeService, pingService, version);
+                discoveryNodeService, pingService, electMasterService, discoverySettings, dynamicSettings);
     }
 }
